@@ -1,0 +1,19 @@
+{
+  "name": "node-modules-cache",
+  "version": "1.0.3",
+  "description": "Skip npm install if cached node_modules matches current package.json and optionally package-lock.json",
+  "bin": "bin/node-modules-cache",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup index.js -f cjs -o bin/node-modules-cache --banner '#!/usr/bin/env node' --config rollup.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "npm run build"
+  },
+  "author": "Damian Kaczmarek <rush@rushbase.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "lodash-es": "^4.17.4",
+    "rollup": "^0.50.0",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  }
+}
