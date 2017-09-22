@@ -1,4 +1,4 @@
-import {readFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 import isEqual from 'lodash-es/isEqual';
 import {execFileSync, spawn} from 'child_process';
 
@@ -34,6 +34,12 @@ function checkCachedFiles(name, ourContent, cachedContent) {
   return true;
 }
 
+function checkMeta() {
+  const ourMeta = getMeta();
+  const cachedmeta = readJson('node_modules/.meta.json');
+  return isEqual(ourMeta, cachedmeta);
+}
+
 function checkCache() {
   const ourPackageLock = readJson('package-lock.json');
   const cachedPackageLock = readJson('node_modules/.package-lock.json');
@@ -46,6 +52,10 @@ function checkCache() {
   }
 }
 
+function setMeta() {
+  writeFileSync('node_modules/.meta.json', JSON.stringify(getMeta()));
+}
+
 function setCache() {
   readJson('package.json', true); // fail if doesn't exist
   execFileSync('cp', ['package.json', 'node_modules/.package.json']);
@@ -55,20 +65,22 @@ function setCache() {
 }
 
 function clearCache() {
-  execFileSync('rm', ['-f', 'node_modules/.package.json']);
-  execFileSync('rm', ['-f', 'node_modules/.package-lock.json']);
+  execFileSync('rm', ['-f', 'node_modules/.package.json', 'node_modules/.package-lock.json', 'node_modules/.meta.json']);
 }
 
 const stdioOpts = {
   stdio: ['inherit', 'inherit', 'inherit']
 };
 
-function install(reinstall = false) {
+function install(reinstall = false) {    
+  if(!checkMeta()) {
+    execFileSync('npm', ['rebuild'], stdioOpts);
+    setMeta();
+  }
   if(!checkCache()) {
     clearCache();
     const args = ['install', ...process.argv.splice(3)];
     if(reinstall) {
-      log('Removing old node_modules');
       execFileSync('rm', ['-rf', 'node_modules'], stdioOpts);
     }
     var npm = spawn('npm', args, stdioOpts);
@@ -76,11 +88,18 @@ function install(reinstall = false) {
       if(code === 0) {
         log('Setting cache after successful npm install');
         setCache();
+        setMeta();
       }
       process.exit(code);
     });
   } else {
     log('No install necessary as cache appears to be valid')
+  }
+}
+
+function getMeta() {
+  return {
+    nodeVersion: execFileSync('node', ['--version']).toString()
   }
 }
 
@@ -98,6 +117,13 @@ else if(process.argv[2] === 'set') {
 } else if(process.argv[2] === 'install') {
   install();
 } else {
-  log('Valid options are')
+  log('Valid options are: check clear set install reinstall')
+  log(`
+check - exit with code 0 if cache is good, code 1 otherwise
+set - set cache inside node_modules assuming "npm install" was successful
+clear - remove cache from node_modules
+install - run "npm install" if cache does not match current package.json/package-lock.json. Additionally it runs "npm rebuild" when node version changes
+reinstall - run "rm -rf node_modules && npm install" if cache does not match current package.json/package-lock.json. Additionally it runs "npm rebuild" when node version changes
+`)
   process.exit(1);
 }
