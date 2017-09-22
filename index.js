@@ -99,7 +99,7 @@ function install(reinstall = false) {
 
 function getMeta() {
   return {
-    nodeVersion: execFileSync('node', ['--version']).toString()
+    nodeVersion: execFileSync('node', ['--version']).toString().replace(/\s+/, '')
   }
 }
 
