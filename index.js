@@ -53,7 +53,9 @@ function checkCache() {
 }
 
 function setMeta() {
-  writeFileSync('node_modules/.meta.json', JSON.stringify(getMeta()));
+  try {
+    writeFileSync('node_modules/.meta.json', JSON.stringify(getMeta()));
+  } catch(err) {}
 }
 
 function setCache() {

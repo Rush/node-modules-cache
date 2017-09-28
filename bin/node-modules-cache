@@ -2059,7 +2059,9 @@ function checkCache() {
 }
 
 function setMeta() {
-  fs.writeFileSync('node_modules/.meta.json', JSON.stringify(getMeta()));
+  try {
+    fs.writeFileSync('node_modules/.meta.json', JSON.stringify(getMeta()));
+  } catch(err) {}
 }
 
 function setCache() {
