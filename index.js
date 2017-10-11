@@ -58,11 +58,13 @@ function setMeta() {
   } catch(err) {}
 }
 
+const cachedPackageLock = readJson('package-lock.json');
+
 function setCache() {
   readJson('package.json', true); // fail if doesn't exist
   execFileSync('cp', ['package.json', 'node_modules/.package.json']);
-  if(readJson('package-lock.json')) {
-      execFileSync('cp', ['package-lock.json', 'node_modules/.package-lock.json']);
+  if(cachedPackageLock) {
+      writeFileSync('node_modules/.package-lock.json', JSON.stringify(cachedPackageLock));
   }
 }
 

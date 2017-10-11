@@ -1,6 +1,6 @@
 {
   "name": "node-modules-cache",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Skip npm install if cached node_modules matches current package.json and optionally package-lock.json",
   "bin": "bin/node-modules-cache",
   "main": "index.js",
