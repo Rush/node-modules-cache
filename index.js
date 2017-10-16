@@ -43,13 +43,13 @@ function checkMeta() {
 function checkCache() {
   const ourPackageLock = readJson('package-lock.json');
   const cachedPackageLock = readJson('node_modules/.package-lock.json');
+  let packageLockCheck = true;
   if(ourPackageLock) {
-    return checkCachedFiles('package-lock.json', ourPackageLock, cachedPackageLock);
-  } else {
-    const ourPackageJson = readJson('package.json', true);
-    const cachedPackageJson = readJson('node_modules/.package.json');
-    return checkCachedFiles('package.json', ourPackageJson, cachedPackageJson);
+    packageLockCheck = checkCachedFiles('package-lock.json', ourPackageLock, cachedPackageLock);
   }
+  const ourPackageJson = readJson('package.json', true);
+  const cachedPackageJson = readJson('node_modules/.package.json');
+  return packageLockCheck && checkCachedFiles('package.json', ourPackageJson, cachedPackageJson);
 }
 
 function setMeta() {
