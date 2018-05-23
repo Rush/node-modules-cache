@@ -129,6 +129,7 @@ check - exit with code 0 if cache is good, code 1 otherwise
 set - set cache inside node_modules assuming "npm install" was successful
 clear - remove cache from node_modules
 install - run "npm install" if cache does not match current package.json/package-lock.json. Additionally it runs "npm rebuild" when node version changes
+ci - run "npm ci" if cache does not match current package.json/package-lock.json. Additionally it runs "npm rebuild" when node version changes
 reinstall - run "rm -rf node_modules && npm install" if cache does not match current package.json/package-lock.json. Additionally it runs "npm rebuild" when node version changes
 `)
   process.exit(1);
