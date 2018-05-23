@@ -76,14 +76,14 @@ const stdioOpts = {
   stdio: ['inherit', 'inherit', 'inherit']
 };
 
-function install(reinstall = false) {    
+function install({reinstall = false, installCommand = "install"} = {}) {
   if(!checkMeta()) {
     execFileSync('npm', ['rebuild'], stdioOpts);
     setMeta();
   }
   if(!checkCache()) {
     clearCache();
-    const args = ['install', ...process.argv.splice(3)];
+    const args = [installCommand, ...process.argv.splice(3)];
     if(reinstall) {
       execFileSync('rm', ['-rf', 'node_modules'], stdioOpts);
     }
@@ -117,9 +117,11 @@ if(process.argv[2] === 'check') {
 else if(process.argv[2] === 'set') {
   setCache();
 } else if(process.argv[2] === 'reinstall') {
-  install(true);
+  install({ reinstall: true });
 } else if(process.argv[2] === 'install') {
   install();
+} else if(process.argv[2] === 'ci') {
+  install({ installCommand: 'ci' });
 } else {
   log('Valid options are: check clear set install reinstall')
   log(`
